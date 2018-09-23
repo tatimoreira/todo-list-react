@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components'
+import React, { Component } from 'react';
+import styled, { isStyledComponent } from 'styled-components'
 
 const AppWrapper = styled.div`
   background-color: #EEEEEE;
@@ -30,36 +30,49 @@ const TodoListContainer = styled.ul`
   padding: 0;
 `
 
-function App() {
-  return (
-    <AppWrapper>
-      <TodoList>
-        <TodoListH1>Todos</TodoListH1>
-        <TodoListContainer>
-          <TodoListItems>
-            <div className="checkbox">
-              <label>
-                <input type="checkbox" value="" />Learn React</label>
-            </div>
-          </TodoListItems>
-          <TodoListItems>
-            <div className="checkbox">
-              <label>
-                <input type="checkbox" value="" />Learn Angular</label>
-            </div>
-          </TodoListItems>
-          <TodoListItems>
-            <div className="checkbox">
-              <label>
-                <input type="checkbox" value="" />Learn Nodejs</label>
-            </div>
-          </TodoListItems>
-        </TodoListContainer>
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      todos: []
+    };
+  }
 
-      </TodoList>
+  componentDidMount() {
+    let url = "http://localhost:3001/tasks";
+    fetch(url)
+      .then(resp => resp.json())
+      .then(data => {
+        let posts = data.map((task, index) => {
+          return (
+            <TodoListItems>
+              <div className="checkbox">
+                <label>
+                  <input type="checkbox" value="" />{task.text}</label>
+              </div>
+            </TodoListItems>
 
-    </AppWrapper>
-  );
+          )
+        })
+        this.setState({ posts: posts });
+      })
+  }
+  render() {
+    return (
+      <AppWrapper>
+        <TodoList>
+          <TodoListH1>Todos</TodoListH1>
+          <TodoListContainer>
+            <div className="App">
+              {this.state.posts}
+            </div>
+          </TodoListContainer>
+        </TodoList>
+      </AppWrapper>
+
+    );
+  }
+
 }
 
 export default App;
